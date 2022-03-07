@@ -25,7 +25,9 @@ COPY --from=venv-build /opt/venv /opt/venv
 COPY app.py utils.py docker-entrypoint.sh /opt/kaldi/egs/align/
 COPY pipelines/align.sh aligning_with_Docker/bin/
 RUN apt-get update && apt-get install perl liburi-encode-perl -y
-RUN apt-get update && apt-get install g++ make automake autoconf patch bzip2 unzip wget git sox gfortran libtool subversion python2.7 zlib1g-dev -y
+RUN apt-get update && apt-get install g++ make automake autoconf patch bzip2 unzip wget git sox gfortran libtool subversion python2.7 zlib1g-dev -y \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 RUN /opt/kaldi/tools/extras/install_mkl.sh
 
 ENV PATH="/opt/venv/bin:/opt/kaldi/src/fstbin:$PATH"

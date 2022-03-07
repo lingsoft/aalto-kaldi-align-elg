@@ -20,8 +20,8 @@ def send_request(url, audio, transcript):
         'content': (os.path.basename(audio), open(audio, 'rb'), 'audio/x-wav')
     }
 
-    r = requests.post(url, files=files)
-    print(json.dumps(r.json()))
+    r = requests.post(url, files=files).json()
+    print(json.dumps(r, indent=4, ensure_ascii=False))
 
 
 for i in range(1):

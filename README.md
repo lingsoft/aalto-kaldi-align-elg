@@ -1,8 +1,8 @@
 # ELG API for Aalto Finnish forced alignment pipeline
 
-This git repository contains [ELG compatible](https://european-language-grid.readthedocs.io/en/stable/all/A3_API/LTInternalAPI.html)  Flask based REST API for the HeLI-OTS language identifier.
+This git repository contains [ELG compatible](https://european-language-grid.readthedocs.io/en/stable/all/A3_API/LTInternalAPI.html)  Flask based REST API for the Finnish forced alignment.
 
-[Aalto-finn-forced-alginment](https://github.com/aalto-speech/finnish-forced-alignment) is a forced aligner for Finnish that can also be used in cross-language forced alignment. The tool is written in Python, and published under MIT license.
+[Aalto-finn-forced-alignment](https://github.com/aalto-speech/finnish-forced-alignment) is a forced aligner for Finnish that can also be used in cross-language forced alignment. The tool is written in Python, and published under MIT license.
 Original authors are Juho Leinonen, Sami Virpioja and Mikko Kurimo. Published paper available [here](https://helda.helsinki.fi/handle/10138/330758).
 
 This ELG API was developed in EU's CEF project: [Microservices at your service](https://www.lingsoft.fi/en/microservices-at-your-service-bridging-gap-between-nlp-research-and-industry)
@@ -33,7 +33,7 @@ The ELG Audio service accepts POST requests of Content-Type: multipart/form-data
 http://<host>:<port>/process
 ```
 
-Replace `<host>` and `<port>` with the host name and port where the 
+Replace `<host>` and `<port>` with the hostname and port where the 
 service is running.
 
 #### HEADERS
@@ -53,7 +53,7 @@ Content-type : multipart/form-data
 }
 ```
 
-The `fname` key of `features` property of the body is optional but `transcript` key is required. Properties `format` and `sampleRate` are both required.
+The `fname` key of `features` property of the body is optional but the `transcript` key is required. Properties `format` and `sampleRate` are both required.
 
 #### RESPONSE
 
