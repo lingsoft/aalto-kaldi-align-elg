@@ -14,7 +14,7 @@ This ELG API was developed in EU's CEF project: [Microservices at your service](
 docker build -t finn-forced-aligner-elg .
 ```
 
-Or pull directly ready-made image `docker pull lingsoft/finn-forced-aligner:tagname`.
+Or pull directly ready-made image `docker pull lingsoft/aalto-finn-forced-aligner:tagname`.
 
 ## Deploying the service
 
@@ -62,6 +62,7 @@ The property `format` is required and `LINEAR16` value is expected, `sampleRate`
 
 Part 2 with name `content`
 - read in audio file content
+- maximum file size support: 25MB
 - `WAV`format only, with an expected 16khz sample rate and a 16 bit sample size. Otherwise, the aligner will convert `WAV` file to a new file with 16khz sample rate and 16 bit sample size before aligning [Source](https://www.kielipankki.fi/tuki/aalto-asr-automaattinen-puheentunnistin/) (in Finnish only).
 - can be either mono or stereo channels.
 
