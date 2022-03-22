@@ -23,7 +23,7 @@ docker run -d -p <port>:8000 --init --memory="2g" --restart always finn-forced-a
 ```
 
 ## REST API
-The ELG Audio service accepts POST requests of Content-Type: multipart/form-data with two parts, the first part with name “request” has type: `application/json`, and the second part with name “content” will be audio/x-wav type which contains the actual audio data with 16,000Hz sample rate.
+The ELG Audio service accepts POST requests of Content-Type: multipart/form-data with two parts, the first part with name `request` has type: `application/json`, and the second part with name `content` will be audio/x-wav type which contains the actual audio data file.
 
 ### Call pattern
 
@@ -44,7 +44,8 @@ Content-type : multipart/form-data
 
 #### BODY
 
-```json
+Part 1 with name `request`
+```
 {
   "type":"audio",
   "format":"string", // LINEAR16 for WAV //required
@@ -53,7 +54,13 @@ Content-type : multipart/form-data
 }
 ```
 
-The `fname` key of `features` property of the body is optional but the `transcript` key is required. Properties `format` and `sampleRate` are both required.
+The property `format` is required and `LINEAR16` value is expected, `sampleRate` is optional. In the property `features`, the `fname` key is optional but the `transcript` key is required. `transcript` should be the text that needs to be aligned with the audio in the second part.
+
+Part 2 with name `content`
+- read in audio file content
+- `WAV`format only, with expected 16khz sample rate and 16 bit sample size. Otherwise, the aligner will convert `WAV` file to  16khz sample rate and 16 bit sample size before algining [Source](https://www.kielipankki.fi/tuki/aalto-asr-automaattinen-puheentunnistin/) (in Finnish only).
+- can be either mono or stereo channels.
+
 
 #### RESPONSE
 
