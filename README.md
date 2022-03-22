@@ -21,6 +21,10 @@ Or pull directly ready-made image `docker pull lingsoft/finn-forced-aligner:tagn
 ```
 docker run -d -p <port>:8000 --init --memory="2g" --restart always finn-forced-aligner-elg
 ```
+## Running tests
+````
+python3 -m unittest  -v
+````
 
 ## REST API
 The ELG Audio service accepts POST requests of Content-Type: multipart/form-data with two parts, the first part with name `request` has type: `application/json`, and the second part with name `content` will be audio/x-wav type which contains the actual audio data file.
@@ -58,7 +62,7 @@ The property `format` is required and `LINEAR16` value is expected, `sampleRate`
 
 Part 2 with name `content`
 - read in audio file content
-- `WAV`format only, with expected 16khz sample rate and 16 bit sample size. Otherwise, the aligner will convert `WAV` file to  16khz sample rate and 16 bit sample size before algining [Source](https://www.kielipankki.fi/tuki/aalto-asr-automaattinen-puheentunnistin/) (in Finnish only).
+- `WAV`format only, with an expected 16khz sample rate and a 16 bit sample size. Otherwise, the aligner will convert `WAV` file to a new file with 16khz sample rate and 16 bit sample size before aligning [Source](https://www.kielipankki.fi/tuki/aalto-asr-automaattinen-puheentunnistin/) (in Finnish only).
 - can be either mono or stereo channels.
 
 
@@ -92,6 +96,7 @@ Part 2 with name `content`
 
 ### Example call
 
+The test file `ikkuna.wav` is converted from the mp3 version of `ikkuna.mp3` which is taken from [forvo](https://forvo.com/word/ikkuna/)
 ```
 python3 multi_form_req.py
 ```
