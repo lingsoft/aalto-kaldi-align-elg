@@ -14,7 +14,7 @@ This ELG API was developed in EU's CEF project: [Microservices at your service](
 docker build -t finn-forced-aligner-elg .
 ```
 
-Or pull directly ready-made image `docker pull lingsoft/aalto-finn-forced-aligner:tagname`.
+Or pull directly ready-made image `docker pull lingsoft/aalto-forced-aligner-fi:tagname`.
 
 ## Deploying the service
 
