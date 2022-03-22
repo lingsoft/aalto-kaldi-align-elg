@@ -8,3 +8,4 @@ cryptography
 idna
 keyring
 elg[flask]
+mutagen

@@ -5,10 +5,14 @@ import requests
 
 def send_request(url, audio, transcript):
     audio_name = os.path.basename(audio)
-    with open(transcript, 'r', encoding='utf-8') as f:
-        text = f.read()
+    if os.path.isfile(transcript):
+        with open(transcript, 'r', encoding='utf-8') as f:
+            text = f.read()
+    else:
+        text = transcript
 
     script = {"fname": audio_name, "transcript": text}
+    script = {"transcript": text}
     payload = {
         "type": "audio",
         "format": "LINEAR16",
@@ -28,3 +32,8 @@ for i in range(1):
     send_request(url='http://localhost:8000/process',
                  audio='src_for_wav/pohjantuuli_ja_aurinko.wav',
                  transcript='src_for_txt/pohjantuuli_ja_aurinko.txt')
+
+for i in range(1):
+    send_request(url='http://localhost:8000/process',
+                 audio='ikkuna.wav',
+                 transcript='ikkuna')
