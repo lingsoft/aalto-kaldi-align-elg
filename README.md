@@ -96,13 +96,11 @@ Part 2 with name `content`
 
 ### Example call
 
-The test file `ikkuna.wav` is converted from the mp3 version of `ikkuna.mp3` which is taken from [forvo](https://forvo.com/word/ikkuna/)
 ```
 python3 multi_form_req.py
 ```
 
-The script sends multipart/form-data POST request with the audio file under `src_for_txt/pohjantuuli_ja_aurinko.wav` and the corresponding script `src_for_txt/pohjantuuli_ja_aurinko.txt` 
-
+The script sends multipart/form-data POST request with the audio file under `src_for_txt/pohjantuuli_ja_aurinko.wav` and the corresponding script `src_for_txt/pohjantuuli_ja_aurinko.txt`. Also, there is another API call on a simple audio file `ikkuna.wav` which contains only one word 'ikkuna' after that. The audio file `ikkuna.wav` is converted from the mp3 version of `ikkuna.mp3` which is taken from [forvo](https://forvo.com/word/ikkuna/)
 
 ### Response should be
 ```json
