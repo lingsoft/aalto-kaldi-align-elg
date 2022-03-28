@@ -11,13 +11,13 @@ def send_request(url, audio, transcript):
     else:
         text = transcript
 
-    script = {"fname": audio_name, "transcript": text}
-    script = {"transcript": text}
+    params_obj = {"fname": audio_name, "transcript": text}
+
     payload = {
         "type": "audio",
         "format": "LINEAR16",
         "sampleRate": 16000,
-        "features": script
+        "params": params_obj
     }
     files = {
         'request': (None, json.dumps(payload), 'application/json'),
@@ -28,12 +28,10 @@ def send_request(url, audio, transcript):
     print(json.dumps(r, indent=4, ensure_ascii=False))
 
 
-for i in range(1):
-    send_request(url='http://localhost:8000/process',
-                 audio='src_for_wav/pohjantuuli_ja_aurinko.wav',
-                 transcript='src_for_txt/pohjantuuli_ja_aurinko.txt')
+send_request(url='http://localhost:8000/process/fi',
+             audio='src_for_wav/pohjantuuli_ja_aurinko.wav',
+             transcript='src_for_txt/pohjantuuli_ja_aurinko.txt')
 
-for i in range(1):
-    send_request(url='http://localhost:8000/process',
-                 audio='ikkuna.wav',
-                 transcript='ikkuna')
+send_request(url='http://localhost:8000/process/fi',
+             audio='ikkuna.wav',
+             transcript='ikkuna')

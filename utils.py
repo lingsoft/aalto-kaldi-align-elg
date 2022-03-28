@@ -1,6 +1,6 @@
 import subprocess
 import os
-import shutil
+import glob
 
 main_dir = '/opt/kaldi/egs/align'  # this is the main directory of all calls
 base_dir = f'{main_dir}/aligning_with_Docker/bin/'
@@ -20,18 +20,32 @@ def parse_ctm_to_json(ctm_file):
     return {"forced_alignment": results}
 
 
-def predict(audio_name):
+def get_phone_csv(lang):
+    if lang == 'en':
+        csv_file = "phone-english-finnish.csv"
+    elif lang == 'se':
+        csv_file = "phone-sami-finnish.csv"
+    elif lang == 'et':
+        csv_file = "phone-estonian-finnish.csv"
+    elif lang == 'kv':
+        csv_file = "phone-komi-finnish.csv"
+    else:
+        csv_file = "phone-finnish-finnish.csv"
+    return csv_file
+
+
+def predict(audio_name, lang='fi'):
     expected_result_ctm = f'/opt/kaldi/egs/kohdistus/{audio_name[:-4]}.ctm'
 
     # These are 5 argunment for the pipeline in align.sh
-    phone_csv_finn = 'phone-finnish-finnish.csv'
+    phone_csv_file = get_phone_csv(lang)
     debugBoolean = 'false'
     textDirTrue = 'textDirTrue'  # means there is transcript available
     src_for_wav = '/opt/kaldi/egs/kohdistus/src_for_wav'
     src_for_txt = '/opt/kaldi/egs/kohdistus/src_for_txt'
 
     subprocess.check_call([
-        'sh', f'{base_dir}align.sh', phone_csv_finn, debugBoolean, textDirTrue,
+        'sh', f'{base_dir}align.sh', phone_csv_file, debugBoolean, textDirTrue,
         src_for_wav, src_for_txt
     ])
 
@@ -43,10 +57,20 @@ def predict(audio_name):
            processing the audio and script files'
 
 
-def clean_up(src_for_wav, src_for_txt):
-    data_dir = '/opt/kaldi/egs/kohdistus'
-    shutil.rmtree(data_dir)
-    # Recreate necessary dir since the aligner needs it always
-    os.mkdir(data_dir)
-    os.mkdir(src_for_wav)
-    os.mkdir(src_for_txt)
+def clean_up(audio_name):
+    audio_src_data_lst = glob.glob(
+        f'/opt/kaldi/egs/kohdistus/*/{audio_name[:-4]}*')
+
+    result_file_lst = glob.glob(f'/opt/kaldi/egs/kohdistus/{audio_name[:-4]}*')
+
+    for filePath in audio_src_data_lst:
+        try:
+            os.remove(filePath)
+        except FileNotFoundError:
+            print('Error while removing file: ', filePath)
+
+    for filePath in result_file_lst:
+        try:
+            os.remove(filePath)
+        except FileNotFoundError:
+            print('Error while removing file: ', filePath)

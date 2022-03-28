@@ -2,7 +2,7 @@
 
 This git repository contains [ELG compatible](https://european-language-grid.readthedocs.io/en/stable/all/A3_API/LTInternalAPI.html)  Flask based REST API for the Finnish forced alignment.
 
-[Aalto-finn-forced-alignment](https://github.com/aalto-speech/finnish-forced-alignment) is a forced aligner for Finnish that can also be used in cross-language forced alignment. The tool is written in Python, and published under MIT license.
+[Aalto-forced-alignment](https://github.com/aalto-speech/finnish-forced-alignment) is a cross-language forced aligner that supports Finnish, English, Northen Sami, Komi, and Estonian. The tool is written in Python, and published under MIT license.
 Original authors are Juho Leinonen, Sami Virpioja and Mikko Kurimo. Published paper available [here](https://helda.helsinki.fi/handle/10138/330758).
 
 This ELG API was developed in EU's CEF project: [Microservices at your service](https://www.lingsoft.fi/en/microservices-at-your-service-bridging-gap-between-nlp-research-and-industry)
@@ -52,13 +52,13 @@ Part 1 with name `request`
 ```
 {
   "type":"audio",
-  "format":"string", // LINEAR16 for WAV //required
+  "format":"string",
   "sampleRate":number,
-  "features":{ /* fname: "audio filename", "transcript": "text of the audio" */ }, //required
+  "params": "object",
 }
 ```
 
-The property `format` is required and `LINEAR16` value is expected, `sampleRate` is optional. In the property `features`, the `fname` key is optional but the `transcript` key is required. `transcript` should be the text that needs to be aligned with the audio in the second part.
+The property `format` is required and `LINEAR16` value is expected, `sampleRate` is optional. In the property `params`, users can specify the `fname` key (optional) for the file name of submitted audio, there is also one required key `transcript` that should be the text that needs to be aligned with the audio in the second part.
 
 Part 2 with name `content`
 - read in audio file content
@@ -69,7 +69,7 @@ Part 2 with name `content`
 
 #### RESPONSE
 
-```json
+```
 {
   "response":{
     "type":"annotations",
@@ -97,14 +97,22 @@ Part 2 with name `content`
 
 ### Example call
 
+Download the sample files from [kielipankki](https://www.kielipankki.fi/tuki/aalto-asr-automaattinen-puheentunnistin/), the bash script downloads two files: audio and transcript files and save them into `src_for_wav` and `src_for_txt` directories.
+```
+sh getSampleFiles.sh
+```
+
+Send the multipart POST request
 ```
 python3 multi_form_req.py
 ```
 
-The script sends multipart/form-data POST request with the audio file under `src_for_txt/pohjantuuli_ja_aurinko.wav` and the corresponding script `src_for_txt/pohjantuuli_ja_aurinko.txt`. Also, there is another API call on a simple audio file `ikkuna.wav` which contains only one word 'ikkuna' after that. The audio file `ikkuna.wav` is converted from the mp3 version of `ikkuna.mp3` which is taken from [forvo](https://forvo.com/word/ikkuna/)
+The script sends multipart/form-data POST request with the audio file under `src_for_wav/pohjantuuli_ja_aurinko.wav` and the corresponding script `src_for_txt/pohjantuuli_ja_aurinko.txt`. Also, there is another API call on a simple audio file `ikkuna.wav` which contains only one word 'ikkuna' after that. The audio file `ikkuna.wav` is converted from the mp3 version of `ikkuna.mp3` which is taken from [forvo](https://forvo.com/word/ikkuna/)
 
 ### Response should be
-```json
+
+This is a truncated version of json response
+```
 {
   "response":{
     "type":"annotations",
@@ -130,7 +138,7 @@ The script sends multipart/form-data POST request with the audio file under `src
       "features":{
          "aligned":"aurinko."
       }
-   }, // truncated
+   },
   ]
     }
   }

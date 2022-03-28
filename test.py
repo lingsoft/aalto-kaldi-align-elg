@@ -6,7 +6,7 @@ import time
 
 
 class TestResponseStucture(unittest.TestCase):
-    base_url = 'http://localhost:8000/process'
+    base_url = 'http://localhost:8000/process/fi'
     audio = 'ikkuna.wav'
     text = 'ikkuna'
     script = {"transcript": text}
@@ -15,7 +15,7 @@ class TestResponseStucture(unittest.TestCase):
         "type": "audio",
         "format": "LINEAR16",
         "sampleRate": 16000,
-        "features": script
+        "params": script
     }
 
     files = {

@@ -21,14 +21,21 @@ if not os.path.isdir(src_for_wav):
 if not os.path.isdir(src_for_txt):
     os.makedirs(src_for_txt, exist_ok=True)
 
+SUPPORT_LANGS = ('fi', 'en', 'se', 'et', 'kv')
+
 
 class AaltoAlign(FlaskService):
     def process_audio(self, request: AudioRequest):
+        lang = self.url_param('lang_code')
+        if lang not in SUPPORT_LANGS:
+            err_msg = StandardMessages.generate_elg_service_not_found(
+                params=[lang])
+            return Failure(errors=[err_msg])
+
         audio_file = request.content
         # validating file size
-        try:
-            audio_file_size = sys.getsizeof(audio_file) / (1024 * 1024)
-        except ZeroDivisionError:
+        audio_file_size = sys.getsizeof(audio_file) / (1024 * 1024)
+        if audio_file_size == 0:
             err_msg = StandardMessages.generate_elg_request_invalid(
                 detail={'audio': 'File is empty'})
             return Failure(errors=[err_msg])
@@ -40,7 +47,7 @@ class AaltoAlign(FlaskService):
         # validating file format
         try:
             audio_info = WAVE(io.BytesIO(audio_file)).info
-        except TypeError:
+        except Exception:
             err_msg = StandardMessages.generate_elg_request_invalid(
                 detail={'audio': 'Audio is not in WAV format'})
             return Failure(errors=[err_msg])
@@ -49,13 +56,13 @@ class AaltoAlign(FlaskService):
 
         # checking audio filename
         try:
-            audio_name = request.features['fname']
+            audio_name = request.params['fname']
         except KeyError:
             audio_name = str(uuid.uuid4()) + '.wav'
 
         # checking transcript
         try:
-            transcript = request.features['transcript']
+            transcript = request.params['transcript']
         except KeyError:
             detail = {'transcript': 'No transcript was given'}
             error = StandardMessages.generate_elg_request_missing(
@@ -86,9 +93,10 @@ class AaltoAlign(FlaskService):
             fp.write(transcript)
 
         # Call pipeline utilty
-        is_success, result = utils.predict(audio_name)
+        is_success, result = utils.predict(audio_name, lang)
+
         # Clean up all files
-        utils.clean_up(src_for_wav, src_for_txt)
+        utils.clean_up(audio_name)
         if is_success:
             return AnnotationsResponse(annotations=result)
         else:
@@ -97,5 +105,6 @@ class AaltoAlign(FlaskService):
             return Failure(errors=[error])
 
 
-aalto_align = AaltoAlign("aalto_align-service")
+aalto_align = AaltoAlign(name="aalto_align-service",
+                         path="/process/<lang_code>")
 app = aalto_align.app
