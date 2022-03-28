@@ -58,7 +58,7 @@ Part 1 with name `request`
 }
 ```
 
-The property `format` is required and `LINEAR16` value is expected, `sampleRate` is optional. In the property `params`, users can specify the `fname` key (optional) for the file name of submitted audio, there is also one required key `transcript` that should be the text that needs to be aligned with the audio in the second part.
+The property `format` is required and `LINEAR16` value is expected, `sampleRate` is optional. In the property `params`, there is required key `transcript` of which value should be the text that needs to be aligned with the audio in the second part.
 
 Part 2 with name `content`
 - read in audio file content

@@ -4,14 +4,13 @@ import requests
 
 
 def send_request(url, audio, transcript):
-    audio_name = os.path.basename(audio)
     if os.path.isfile(transcript):
         with open(transcript, 'r', encoding='utf-8') as f:
             text = f.read()
     else:
         text = transcript
 
-    params_obj = {"fname": audio_name, "transcript": text}
+    params_obj = {"transcript": text}
 
     payload = {
         "type": "audio",

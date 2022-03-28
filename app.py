@@ -54,12 +54,6 @@ class AaltoAlign(FlaskService):
 
         logging.info('Sent audio info: ', audio_info.pprint())
 
-        # checking audio filename
-        try:
-            audio_name = request.params['fname']
-        except KeyError:
-            audio_name = str(uuid.uuid4()) + '.wav'
-
         # checking transcript
         try:
             transcript = request.params['transcript']
@@ -69,6 +63,7 @@ class AaltoAlign(FlaskService):
                 detail=detail)
             return Failure(errors=[error])
 
+        audio_name = str(uuid.uuid4()) + '.wav'
         # too short transcript
         if len(transcript) < 3:
             detail = {
