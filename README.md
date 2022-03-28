@@ -34,11 +34,11 @@ The ELG Audio service accepts POST requests of Content-Type: multipart/form-data
 #### URL
 
 ```
-http://<host>:<port>/process
+http://<host>:<port>/process/<lang_code>
 ```
 
 Replace `<host>` and `<port>` with the hostname and port where the 
-service is running.
+service is running. `<lang_code>` should be one of these: `('fi', 'en', 'se', 'et', 'kv')`
 
 #### HEADERS
 
