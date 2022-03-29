@@ -21,10 +21,13 @@ Or pull directly ready-made image `docker pull lingsoft/aalto-forced-aligner-fi:
 ```
 docker run -d -p <port>:8000 --init --memory="2g" --restart always finn-forced-aligner-elg
 ```
+
 ## Running tests
-````
+Some audio samples under `test_samples` directory such as`i_am_developer.wav`, `olen_kehittäjä.wav`, and `olen_arendaja.wav`used for testing are text to speech files captured from Google Translate service. Currently, testing executes for Finnish, Estonian, and English audios and scripts.
+
+```
 python3 -m unittest  -v
-````
+```
 
 ## REST API
 The ELG Audio service accepts POST requests of Content-Type: multipart/form-data with two parts, the first part with name `request` has type: `application/json`, and the second part with name `content` will be audio/x-wav type which contains the actual audio data file.
