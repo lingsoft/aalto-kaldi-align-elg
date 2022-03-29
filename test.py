@@ -150,7 +150,8 @@ class TestResponseStucture(unittest.TestCase):
         """Service should return ELG failure when mp3 audio file is sent
         """
 
-        mp3_audio = os.path.join(os.getcwd(), 'test_samples/ikkuna.mp3')
+        mp3_audio = os.path.join(os.getcwd(),
+                                 'test_samples/olen_kehittäjä.mp3')
 
         for lang, text in zip(self.lang_codes, self.texts):
             url, files = self.make_audio_req(lang, mp3_audio, text)
