@@ -85,7 +85,7 @@ class TestResponseStucture(unittest.TestCase):
                     'content':
                     (os.path.basename(audio), f.read(), 'audio/x-wav')
                 }
-        except FileExistsError:
+        except Exception:
             files = {
                 'request': (None, json.dumps(payload), 'application/json'),
                 'content': (None, audio, 'audio/x-wav')
