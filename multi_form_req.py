@@ -32,5 +32,5 @@ send_request(url='http://localhost:8000/process/fi',
              transcript='src_for_txt/pohjantuuli_ja_aurinko.txt')
 
 send_request(url='http://localhost:8000/process/fi',
-             audio='ikkuna.wav',
+             audio='test_samples/ikkuna.wav',
              transcript='ikkuna')
