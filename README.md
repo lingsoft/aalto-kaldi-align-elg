@@ -23,7 +23,7 @@ docker run -d -p <port>:8000 --init --memory="2g" --restart always aalto-kaldi-a
 ```
 
 ## Running tests
-Some audio samples under `test_samples` directory such as`i_am_developer.wav`, `olen_kehittäjä.wav`, and `olen_arendaja.wav`used for testing are text to speech files captured from Google Translate service. Currently, testing executes for Finnish, Estonian, and English audios and scripts.
+Some audio samples under `test_samples` directory such as `i_am_developer.wav`, `olen_kehittäjä.wav`, and `olen_arendaja.wav`used for testing are text to speech files captured from Google Translate service. Currently, testing executes for Finnish, Estonian, and English audios and scripts.
 
 ```
 python3 -m unittest  -v
@@ -55,9 +55,10 @@ Part 1 with name `request`
 ```
 {
   "type":"audio",
-  "format":"string",
+  "format":"LINEAR16",
   "sampleRate":number,
-  "params": "object",
+  "params": 
+    {"transcript": "text"}
 }
 ```
 
@@ -66,7 +67,7 @@ The property `format` is required and `LINEAR16` (for WAV format) value is expec
 Part 2 with name `content`
 - read in audio file content
 - maximum file size support: 25MB
-- `WAV`format only, with an expected 16khz sample rate and a 16 bit sample size. Otherwise, the aligner will convert `WAV` file to a new file with 16khz sample rate and 16 bit sample size before aligning [Source](https://www.kielipankki.fi/tuki/aalto-asr-automaattinen-puheentunnistin/) (in Finnish only).
+- `WAV` format only, with an expected 16khz sample rate and a 16 bit sample size. Otherwise, the aligner will convert `WAV` file to a new file with 16khz sample rate and 16 bit sample size before aligning [Source](https://www.kielipankki.fi/tuki/aalto-asr-automaattinen-puheentunnistin/) (in Finnish only).
 - can be either mono or stereo channels.
 
 
