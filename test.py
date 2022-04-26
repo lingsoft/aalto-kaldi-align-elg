@@ -102,7 +102,21 @@ class TestResponseStucture(unittest.TestCase):
             status_code = requests.post(url, files=files).status_code
             self.assertEqual(status_code, 200)
 
-        time.sleep(10)
+        time.sleep(30)
+
+    def test_api_response_status_code_with_wrong_end_point(self):
+        """Should return ELG failure response in 3 wrong lang_codes endpoints
+        """
+        wrong_lang_codes = ['fini', 'engi', 'esti']
+        for lang, audio, text in zip(wrong_lang_codes, self.audios,
+                                     self.texts):
+            url, files = self.make_audio_req(lang, audio, text)
+            res = requests.post(url, files=files).json()
+            self.assertIn('failure', res)
+            self.assertEqual(res['failure']['errors'][0]['code'],
+                             'elg.service.not.found')
+
+        time.sleep(30)
 
     def test_api_response_result(self):
         """Should return ELG annotation response with correct aligned
@@ -126,7 +140,7 @@ class TestResponseStucture(unittest.TestCase):
                     response['response']['annotations']['forced_alignment']
                     [id].get('end'), true_obj['end'])
 
-        time.sleep(10)
+        time.sleep(30)
 
     def test_api_response_too_small_audio_request(self):
         """Service should return ELG failure when
@@ -144,7 +158,7 @@ class TestResponseStucture(unittest.TestCase):
             self.assertEqual(
                 response['failure']['errors'][0]['detail']['audio'],
                 'File is empty or too small')
-        time.sleep(10)
+        time.sleep(30)
 
     def test_api_response_invalid_audio_format_request(self):
         """Service should return ELG failure when mp3 audio file is sent
@@ -161,7 +175,7 @@ class TestResponseStucture(unittest.TestCase):
             self.assertEqual(
                 response['failure']['errors'][0]['detail']['audio'],
                 'Audio is not in WAV format')
-        time.sleep(10)
+        time.sleep(30)
 
 
 if __name__ == '__main__':
