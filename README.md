@@ -1,4 +1,4 @@
-# ELG API for Aalto Finnish forced alignment pipeline
+# ELG API for Aalto forced alignment pipeline
 
 This git repository contains [ELG compatible](https://european-language-grid.readthedocs.io/en/stable/all/A3_API/LTInternalAPI.html)  Flask based REST API for the Finnish forced alignment.
 
@@ -11,15 +11,15 @@ This ELG API was developed in EU's CEF project: [Microservices at your service](
 ## Building the docker image
 
 ```
-docker build -t finn-forced-aligner-elg .
+docker build -t aalto-kaldi-align .
 ```
 
-Or pull directly ready-made image `docker pull lingsoft/aalto-forced-aligner-fi:tagname`.
+Or pull directly ready-made image `docker pull lingsoft/aalto-kaldi-align:tagname`.
 
 ## Deploying the service
 
 ```
-docker run -d -p <port>:8000 --init --memory="2g" --restart always finn-forced-aligner-elg
+docker run -d -p <port>:8000 --init --memory="2g" --restart always aalto-kaldi-align
 ```
 
 ## Running tests
@@ -61,7 +61,7 @@ Part 1 with name `request`
 }
 ```
 
-The property `format` is required and `LINEAR16` value is expected, `sampleRate` is optional. In the property `params`, there is required key `transcript` of which value should be the text that needs to be aligned with the audio in the second part.
+The property `format` is required and `LINEAR16` (for WAV format) value is expected, `sampleRate` is optional. In the property `params`, there is required key `transcript` of which value should be the text that needs to be aligned with the audio in the second part.
 
 Part 2 with name `content`
 - read in audio file content
