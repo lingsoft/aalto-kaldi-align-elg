@@ -35,7 +35,7 @@ class AaltoAlign(FlaskService):
         audio_file = request.content
         # validating file size
         audio_file_size = sys.getsizeof(audio_file) / 1024
-        if audio_file_size == 0 or audio_file_size < 20:
+        if audio_file_size < 20:
             err_msg = StandardMessages.generate_elg_request_invalid(
                 detail={'audio': 'File is empty or too small'})
             return Failure(errors=[err_msg])
@@ -63,7 +63,6 @@ class AaltoAlign(FlaskService):
                 detail=detail)
             return Failure(errors=[error])
 
-        audio_name = str(uuid.uuid4()) + '.wav'
         # too short transcript
         if len(transcript) < 3:
             detail = {
@@ -74,8 +73,8 @@ class AaltoAlign(FlaskService):
                 detail=detail)
             return Failure(errors=[error])
 
+        audio_name = str(uuid.uuid4()) + '.wav'
         transcript_name = audio_name[:-4] + '.txt'
-
         audio_save_path = os.path.join(src_for_wav, audio_name)
         transcript_save_path = os.path.join(src_for_txt, transcript_name)
 
