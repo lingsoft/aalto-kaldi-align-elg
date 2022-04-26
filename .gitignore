@@ -1,2 +1,4 @@
+__pycache__/
+*.py[cod]
 src_for_wav/
 src_for_txt/
