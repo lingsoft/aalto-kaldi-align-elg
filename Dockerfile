@@ -1,3 +1,4 @@
+# Version: juholeinonen/kaldi-align:5.1
 FROM juholeinonen/kaldi-align@sha256:20056bf9c2af15d4f1a5c9f3567c8aeb23394ee6f01d9a395fb032a6a33ad4de as kaldi-build
 ENV LANG en_US.UTF-8
 # Install tini and create an unprivileged user

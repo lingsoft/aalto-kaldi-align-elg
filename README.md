@@ -3,7 +3,8 @@
 This git repository contains [ELG compatible](https://european-language-grid.readthedocs.io/en/stable/all/A3_API/LTInternalAPI.html)  Flask based REST API for the Finnish forced alignment.
 
 [Aalto-forced-alignment](https://github.com/aalto-speech/finnish-forced-alignment) is a cross-language forced aligner that supports Finnish, English, Northen Sami, Komi, and Estonian. The tool is written in Python, and published under MIT license.
-Original authors are Juho Leinonen, Sami Virpioja and Mikko Kurimo. Published paper available [here](https://helda.helsinki.fi/handle/10138/330758).
+Original authors are Juho Leinonen, Sami Virpioja and Mikko Kurimo. Published paper available [here](https://helda.helsinki.fi/handle/10138/330758). 
+Our API is based on version [5.1](https://hub.docker.com/r/juholeinonen/kaldi-align/tags).
 
 This ELG API was developed in EU's CEF project: [Microservices at your service](https://www.lingsoft.fi/en/microservices-at-your-service-bridging-gap-between-nlp-research-and-industry)
 
