@@ -2,7 +2,6 @@ import unittest
 import json
 import requests
 import os
-import time
 
 
 class TestResponseStucture(unittest.TestCase):
@@ -102,8 +101,6 @@ class TestResponseStucture(unittest.TestCase):
             status_code = requests.post(url, files=files).status_code
             self.assertEqual(status_code, 200)
 
-        time.sleep(30)
-
     def test_api_response_status_code_with_wrong_end_point(self):
         """Should return ELG failure response in 3 wrong lang_codes endpoints
         """
@@ -115,8 +112,6 @@ class TestResponseStucture(unittest.TestCase):
             self.assertIn('failure', res)
             self.assertEqual(res['failure']['errors'][0]['code'],
                              'elg.service.not.found')
-
-        time.sleep(30)
 
     def test_api_response_result(self):
         """Should return ELG annotation response with correct aligned
@@ -140,8 +135,6 @@ class TestResponseStucture(unittest.TestCase):
                     response['response']['annotations']['forced_alignment']
                     [id].get('end'), true_obj['end'])
 
-        time.sleep(30)
-
     def test_api_response_too_small_audio_request(self):
         """Service should return ELG failure when
         too small audio file is sent
@@ -158,7 +151,6 @@ class TestResponseStucture(unittest.TestCase):
             self.assertEqual(
                 response['failure']['errors'][0]['detail']['audio'],
                 'File is empty or too small')
-        time.sleep(30)
 
     def test_api_response_invalid_audio_format_request(self):
         """Service should return ELG failure when mp3 audio file is sent
@@ -175,7 +167,116 @@ class TestResponseStucture(unittest.TestCase):
             self.assertEqual(
                 response['failure']['errors'][0]['detail']['audio'],
                 'Audio is not in WAV format')
-        time.sleep(30)
+
+    def test_mismatch_audio_format_request_and_sent_file(self):
+        """Service should return additional warning when user send mismatch
+        audio format w.r.t the sent audio file"""
+
+        url = self.base_url + '/' + 'fi'
+        audio = 'test_samples/olen_kehittäjä.wav'
+        script = {"transcript": "Olen kehittäjä"}
+        payload = {
+            "type": "audio",
+            "format": "mp3",
+            "sampleRate": 16000,
+            "params": script
+        }
+
+        with open(audio, 'rb') as f:
+            files = {
+                'request': (None, json.dumps(payload), 'application/json'),
+                'content': (os.path.basename(audio), f.read(), 'audio/x-wav')
+            }
+
+        response = requests.post(url, files=files).json()
+        print(response)
+
+        self.assertEqual(response['response'].get('type'), 'annotations')
+        self.assertEqual(response['response']['warnings'][0]['code'],
+                         'elg.request.parameter.format.value.mismatch')
+
+    def test_mismatch_audio_sampleRate_request_and_sent_file(self):
+        """Service should return additional warning when user send mismatch
+        audio sampleRate w.r.t the sent audio file"""
+
+        url = self.base_url + '/' + 'fi'
+        audio = 'test_samples/olen_kehittäjä.wav'
+        script = {"transcript": "Olen kehittäjä"}
+        payload = {
+            "type": "audio",
+            "format": "LINEAR16",
+            "sampleRate": 12000,
+            "params": script
+        }
+
+        with open(audio, 'rb') as f:
+            files = {
+                'request': (None, json.dumps(payload), 'application/json'),
+                'content': (os.path.basename(audio), f.read(), 'audio/x-wav')
+            }
+
+        response = requests.post(url, files=files).json()
+        print(response)
+
+        self.assertEqual(response['response'].get('type'), 'annotations')
+        self.assertEqual(response['response']['warnings'][0]['code'],
+                         'elg.request.parameter.sampleRate.value.mismatch')
+
+    def test_mismatch_audio_sampleRate_and_format_request_and_sent_file(self):
+        """Service should return two additional warning when user send mismatch
+        audio format and sampleRate w.r.t the sent audio file"""
+
+        url = self.base_url + '/' + 'fi'
+        audio = 'test_samples/olen_kehittäjä.wav'
+        script = {"transcript": "Olen kehittäjä"}
+        payload = {
+            "type": "audio",
+            "format": "mp3",
+            "sampleRate": 12000,
+            "params": script
+        }
+
+        with open(audio, 'rb') as f:
+            files = {
+                'request': (None, json.dumps(payload), 'application/json'),
+                'content': (os.path.basename(audio), f.read(), 'audio/x-wav')
+            }
+
+        response = requests.post(url, files=files).json()
+        print(response)
+
+        self.assertEqual(response['response'].get('type'), 'annotations')
+        self.assertEqual(response['response']['warnings'][0]['code'],
+                         'elg.request.parameter.format.value.mismatch')
+        self.assertEqual(response['response']['warnings'][1]['code'],
+                         'elg.request.parameter.sampleRate.value.mismatch')
+
+    # There is one bug in the current ELG SDK version that prevents this test.
+    # def test_missing_transcript_paramter_request(self):
+    #     """Service should return Failure response when user did not
+    #     add transcript paramter in the request"""
+
+    #     url = self.base_url + '/' + 'fi'
+    #     audio = 'test_samples/olen_kehittäjä.wav'
+    #     payload = {
+    #         "type": "audio",
+    #         "format": "mp3",
+    #         "sampleRate": 16000,
+    #     }
+
+    #     with open(audio, 'rb') as f:
+    #         files = {
+    #             'request': (None, json.dumps(payload), 'application/json'),
+    #             'content': (os.path.basename(audio), f.read(), 'audio/x-wav')
+    #         }
+
+    #     response = requests.post(url, files=files).json()
+    #     print(response)
+
+    #     self.assertIn('failure', response)
+    #     self.assertEqual(
+    #         response['failure']['errors'][0]['detail']['transcript'],
+    #         'No transcript was given')
 
 
 if __name__ == '__main__':

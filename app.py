@@ -3,12 +3,12 @@ import utils
 from elg import FlaskService
 from elg.model import Failure, AudioRequest, AnnotationsResponse
 from elg.model.base import StandardMessages
+from elg.model.base import StatusMessage
 
 import io
 import os
 import sys
 import uuid  # for creatig random filename when needed
-import logging
 
 from mutagen.wave import WAVE  # for audio info check
 
@@ -33,6 +33,7 @@ class AaltoAlign(FlaskService):
             return Failure(errors=[err_msg])
 
         audio_file = request.content
+
         # validating file size
         audio_file_size = sys.getsizeof(audio_file) / 1024
         if audio_file_size < 20:
@@ -52,7 +53,24 @@ class AaltoAlign(FlaskService):
                 detail={'audio': 'Audio is not in WAV format'})
             return Failure(errors=[err_msg])
 
-        logging.info('Sent audio info: ', audio_info.pprint())
+        # warning about the parameter if it's not match the sent file
+        format_warning_msg, sampleRate_warning_msg = None, None
+        if request['format'] != 'LINEAR16':
+            format_warning_msg = StatusMessage(
+                code='elg.request.parameter.format.value.mismatch',
+                params=['LINEAR16'],
+                text=
+                'Sent parameter format is not LINEAR16 although sent file is: {0}'
+            )
+
+        if request.get('sample_rate'
+                       ) and request['sample_rate'] != audio_info.sample_rate:
+            sampleRate_warning_msg = StatusMessage(
+                code='elg.request.parameter.sampleRate.value.mismatch',
+                params=[str(audio_info.sample_rate)],
+                text=
+                'Sent parameter sample rate is not matched with the sample rate of sent file: {0}'
+            )
 
         # checking transcript
         try:
@@ -91,8 +109,16 @@ class AaltoAlign(FlaskService):
 
         # Clean up all files
         utils.clean_up(audio_name)
+
+        warnings_msg_lst = []
+        if format_warning_msg:
+            warnings_msg_lst.append(format_warning_msg)
+        if sampleRate_warning_msg:
+            warnings_msg_lst.append(sampleRate_warning_msg)
+
         if is_success:
-            return AnnotationsResponse(annotations=result)
+            return AnnotationsResponse(annotations=result,
+                                       warnings=warnings_msg_lst)
         else:
             error = StandardMessages.generate_elg_service_internalerror(
                 params=[result])
