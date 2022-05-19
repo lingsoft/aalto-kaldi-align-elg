@@ -55,7 +55,7 @@ class AaltoAlign(FlaskService):
 
         # warning about the parameter if it's not match the sent file
         format_warning_msg, sampleRate_warning_msg = None, None
-        if request['format'] != 'LINEAR16':
+        if request.format != 'LINEAR16':
             format_warning_msg = StatusMessage(
                 code='elg.request.parameter.format.value.mismatch',
                 params=['LINEAR16'],
@@ -63,8 +63,8 @@ class AaltoAlign(FlaskService):
                 'Sent parameter format is not LINEAR16 although sent file is: {0}'
             )
 
-        if request.get('sample_rate'
-                       ) and request['sample_rate'] != audio_info.sample_rate:
+        if hasattr(request, 'sample_rate'
+                   ) and request.sample_rate != audio_info.sample_rate:
             sampleRate_warning_msg = StatusMessage(
                 code='elg.request.parameter.sampleRate.value.mismatch',
                 params=[str(audio_info.sample_rate)],
