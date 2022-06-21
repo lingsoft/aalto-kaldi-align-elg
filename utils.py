@@ -53,8 +53,7 @@ def predict(audio_name, lang='fi'):
         os.path.exists(expected_result_ctm)
         return True, parse_ctm_to_json(expected_result_ctm)
     except FileNotFoundError:
-        return False, 'Sorry, something wrong at our back-end when\
-           processing the audio and script files'
+        return False, 'Something went wrong at back-end'
 
 
 def clean_up(audio_name):
