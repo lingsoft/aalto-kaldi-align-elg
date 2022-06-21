@@ -93,17 +93,14 @@ class TestResponseStucture(unittest.TestCase):
         return url, files
 
     def test_api_response_status_code(self):
-        """Should return status code 200 in 3 lang_codes endpoints
-        """
-
+        """Status code 200 in 3 lang_codes endpoints"""
         for lang, audio, text in zip(self.lang_codes, self.audios, self.texts):
             url, files = self.make_audio_req(lang, audio, text)
             status_code = requests.post(url, files=files).status_code
             self.assertEqual(status_code, 200)
 
     def test_api_response_status_code_with_wrong_end_point(self):
-        """Should return ELG failure response in 3 wrong lang_codes endpoints
-        """
+        """Failure in 3 wrong lang_codes endpoints"""
         wrong_lang_codes = ['fini', 'engi', 'esti']
         for lang, audio, text in zip(wrong_lang_codes, self.audios,
                                      self.texts):
@@ -114,14 +111,12 @@ class TestResponseStucture(unittest.TestCase):
                              'elg.service.not.found')
 
     def test_api_response_result(self):
-        """Should return ELG annotation response with correct aligned
-        """
-
+        """Annotation response with correct aligned"""
+        
         for lang, audio, text in zip(self.lang_codes, self.audios, self.texts):
             url, files = self.make_audio_req(lang, audio, text)
             response = requests.post(url, files=files).json()
             print(response)
-
             self.assertEqual(response['response'].get('type'), 'annotations')
             for id, true_obj in enumerate(self.data_aligns[lang]):
                 self.assertEqual(
@@ -136,10 +131,7 @@ class TestResponseStucture(unittest.TestCase):
                     [id].get('end'), true_obj['end'])
 
     def test_api_response_too_small_audio_request(self):
-        """Service should return ELG failure when
-        too small audio file is sent
-        """
-
+        """Failure when too small audio file is sent"""
         too_short_audio = b'RIFF$\x00\x00\x00WAVEfmt \x10\x00\x00\x00\x01\x00\
             \x01\x00\x00\x04\x00\x00\x00\x04\x00\x00\x01\x00\x08\x00data\x00\x00\x00\x00'
 
@@ -153,9 +145,7 @@ class TestResponseStucture(unittest.TestCase):
                 'File is empty or too small')
 
     def test_api_response_invalid_audio_format_request(self):
-        """Service should return ELG failure when mp3 audio file is sent
-        """
-
+        """Failure when mp3 audio file is sent"""
         mp3_audio = os.path.join(os.getcwd(),
                                  'test_samples/olen_kehittäjä.mp3')
 
@@ -164,13 +154,11 @@ class TestResponseStucture(unittest.TestCase):
             response = requests.post(url, files=files).json()
             print(response)
             self.assertIn('failure', response)
-            self.assertEqual(
-                response['failure']['errors'][0]['detail']['audio'],
-                'Audio is not in WAV format')
+            self.assertEqual(response['failure']['errors'][0]['code'],
+                             'elg.request.audio.format.unsupported')
 
     def test_mismatch_audio_format_request_and_sent_file(self):
-        """Service should return additional warning when user send mismatch
-        audio format w.r.t the sent audio file"""
+        """Failure when user send wrong audio format metadata"""
 
         url = self.base_url + '/' + 'fi'
         audio = 'test_samples/olen_kehittäjä.wav'
@@ -190,14 +178,12 @@ class TestResponseStucture(unittest.TestCase):
 
         response = requests.post(url, files=files).json()
         print(response)
-
-        self.assertEqual(response['response'].get('type'), 'annotations')
-        self.assertEqual(response['response']['warnings'][0]['code'],
-                         'elg.request.parameter.format.value.mismatch')
+        self.assertIn('failure', response)
+        self.assertEqual(response['failure']['errors'][0]['code'],
+                'elg.request.audio.format.unsupported')
 
     def test_mismatch_audio_sampleRate_request_and_sent_file(self):
-        """Service should return additional warning when user send mismatch
-        audio sampleRate w.r.t the sent audio file"""
+        """Failure when user send wrong audio sampleRate"""
 
         url = self.base_url + '/' + 'fi'
         audio = 'test_samples/olen_kehittäjä.wav'
@@ -217,39 +203,8 @@ class TestResponseStucture(unittest.TestCase):
 
         response = requests.post(url, files=files).json()
         print(response)
-
-        self.assertEqual(response['response'].get('type'), 'annotations')
-        self.assertEqual(response['response']['warnings'][0]['code'],
-                         'elg.request.parameter.sampleRate.value.mismatch')
-
-    def test_mismatch_audio_sampleRate_and_format_request_and_sent_file(self):
-        """Service should return two additional warning when user send mismatch
-        audio format and sampleRate w.r.t the sent audio file"""
-
-        url = self.base_url + '/' + 'fi'
-        audio = 'test_samples/olen_kehittäjä.wav'
-        script = {"transcript": "Olen kehittäjä"}
-        payload = {
-            "type": "audio",
-            "format": "mp3",
-            "sampleRate": 12000,
-            "params": script
-        }
-
-        with open(audio, 'rb') as f:
-            files = {
-                'request': (None, json.dumps(payload), 'application/json'),
-                'content': (os.path.basename(audio), f.read(), 'audio/x-wav')
-            }
-
-        response = requests.post(url, files=files).json()
-        print(response)
-
-        self.assertEqual(response['response'].get('type'), 'annotations')
-        self.assertEqual(response['response']['warnings'][0]['code'],
-                         'elg.request.parameter.format.value.mismatch')
-        self.assertEqual(response['response']['warnings'][1]['code'],
-                         'elg.request.parameter.sampleRate.value.mismatch')
+        self.assertEqual(response['failure']['errors'][0]['code'],
+                'elg.request.audio.sampleRate.unsupported')
 
     # There is one bug in the current ELG SDK version that prevents this test.
     # def test_missing_transcript_paramter_request(self):
