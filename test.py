@@ -207,32 +207,31 @@ class TestResponseStucture(unittest.TestCase):
         self.assertEqual(response['response']['warnings'][0]['code'],
                 'lingsoft.sampleRate.value.mismatch')
 
-    # There is one bug in the current ELG SDK version that prevents this test.
-    # def test_missing_transcript_paramter_request(self):
-    #     """Service should return Failure response when user did not
-    #     add transcript paramter in the request"""
+    def test_missing_transcript_parameter_request(self):
+        """Failure when missing transcript"""
 
-    #     url = self.base_url + '/' + 'fi'
-    #     audio = 'test_samples/olen_kehittäjä.wav'
-    #     payload = {
-    #         "type": "audio",
-    #         "format": "mp3",
-    #         "sampleRate": 16000,
-    #     }
+        url = self.base_url + '/' + 'fi'
+        audio = 'test_samples/olen_kehittäjä.wav'
+        script = {"text": "Olen kehittäjä"}
+        payload = {
+            "type": "audio",
+            "format": "LINEAR16",
+            "sampleRate": 16000,
+            "params": script
+        }
 
-    #     with open(audio, 'rb') as f:
-    #         files = {
-    #             'request': (None, json.dumps(payload), 'application/json'),
-    #             'content': (os.path.basename(audio), f.read(), 'audio/x-wav')
-    #         }
+        with open(audio, 'rb') as f:
+            files = {
+                'request': (None, json.dumps(payload), 'application/json'),
+                'content': (os.path.basename(audio), f.read(), 'audio/x-wav')
+            }
 
-    #     response = requests.post(url, files=files).json()
-    #     print(response)
-
-    #     self.assertIn('failure', response)
-    #     self.assertEqual(
-    #         response['failure']['errors'][0]['detail']['transcript'],
-    #         'No transcript was given')
+        response = requests.post(url, files=files).json()
+        print(response)
+        self.assertIn('failure', response)
+        self.assertEqual(
+            response['failure']['errors'][0]['code'],
+            'elg.request.parameter.missing')
 
 
 if __name__ == '__main__':
