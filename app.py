@@ -38,27 +38,26 @@ class AaltoAlign(FlaskService):
                 params=[lang])
             return Failure(errors=[err_msg])
 
-        # In specs sampleRate but in ELG Python SDK sample_rate
-        # https://european-language-grid.readthedocs.io/en/stable/all/A1_PythonSDK/Model.html#module-elg.model.request.AudioRequest
-        for elem in ["format", "sample_rate", "content", "params"]:
+        for elem in ["format", "content"]:
             if (not hasattr(request, elem)) or (getattr(request, elem) is None):
                 mp_msg = "Missing property {}".format(elem)
                 err_msg = StandardMessages.generate_elg_request_invalid(
                         detail={"request": mp_msg})
                 return Failure(errors=[err_msg])
 
-        try:
-            transcript = request.params['transcript']
-        except KeyError:
-            detail = {'transcript': 'No transcript was given'}
-            err_msg = StandardMessages.generate_elg_request_invalid(
-                detail=detail)
+        transcript = (request.params or {}).get('transcript')
+        if not transcript:
+            # this is a standard message code but it has not yet been included in a
+            # released version of StandardMessagesi (IR 2022-06-23)
+            err_msg = StatusMessage(code="elg.request.parameter.missing",
+                text="Required parameter {0} missing from request",
+                params=["transcript"])
             return Failure(errors=[err_msg])
 
         if len(transcript) < MIN_TRANSCRIPT:
-            detail = {'transcript': 'Given transcript is too short'}
-            error = StandardMessages.generate_elg_request_invalid(
-                detail=detail)
+            # Do not use "elg." prefix for custom message codes (IR 2022-06-23)
+            error = StatusMessage(code="lingsoft.transcript.too.short",
+                text="Given transcript is too short")
             return Failure(errors=[error])
         if request.format != AUDIO_FORMAT:
             err_msg = StandardMessages.generate_elg_request_audio_format_unsupported(
@@ -83,14 +82,21 @@ class AaltoAlign(FlaskService):
             err_msg = StandardMessages.generate_elg_request_audio_format_unsupported(
                     params=["different from WAV"])
             return Failure(errors=[err_msg])
-        if int(request.sample_rate) != SAMPLE_RATE:
-            err_msg = StandardMessages.generate_elg_request_audio_samplerate_unsupported(
-                    params=[request.sample_rate])
-            return Failure(errors=[err_msg])
         if audio_info.sample_rate != SAMPLE_RATE:
             err_msg = StandardMessages.generate_elg_request_audio_samplerate_unsupported(
-                    params=[audio_info.sample_rate])
+                    params=[str(audio_info.sample_rate)])
             return Failure(errors=[err_msg])
+
+        # In specs sampleRate but in ELG Python SDK sample_rate
+        # https://european-language-grid.readthedocs.io/en/stable/all/A1_PythonSDK/Model.html#module-elg.model.request.AudioRequest
+        sampleRate_warning_msg = None
+        if request.sample_rate and (request.sample_rate != audio_info.sample_rate):
+            sampleRate_warning_msg = StatusMessage(
+                code='lingsoft.sampleRate.value.mismatch',
+                params=[str(request.sample_rate), str(audio_info.sample_rate)],
+                text=
+                'Parameter sample rate {0} does not match file sample rate {1}'
+            )
 
         audio_name = str(uuid.uuid4()) + '.wav'
         transcript_name = audio_name[:-4] + '.txt'
@@ -107,7 +113,10 @@ class AaltoAlign(FlaskService):
         utils.clean_up(audio_name)
 
         if is_success:
-            return AnnotationsResponse(annotations=result)
+            resp = AnnotationsResponse(annotations=result)
+            if sampleRate_warning_msg:
+                resp.warnings = [sampleRate_warning_msg]
+            return resp
         else:
             error = StandardMessages.generate_elg_service_internalerror(
                 params=[result])
