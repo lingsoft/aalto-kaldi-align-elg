@@ -183,7 +183,7 @@ class TestResponseStucture(unittest.TestCase):
                 'elg.request.audio.format.unsupported')
 
     def test_mismatch_audio_sampleRate_request_and_sent_file(self):
-        """Failure when user send wrong audio sampleRate"""
+        """Warning when user send wrong audio sampleRate"""
 
         url = self.base_url + '/' + 'fi'
         audio = 'test_samples/olen_kehittäjä.wav'
@@ -203,8 +203,9 @@ class TestResponseStucture(unittest.TestCase):
 
         response = requests.post(url, files=files).json()
         print(response)
-        self.assertEqual(response['failure']['errors'][0]['code'],
-                'elg.request.audio.sampleRate.unsupported')
+        self.assertEqual(response['response'].get('type'), 'annotations')
+        self.assertEqual(response['response']['warnings'][0]['code'],
+                'lingsoft.sampleRate.value.mismatch')
 
     # There is one bug in the current ELG SDK version that prevents this test.
     # def test_missing_transcript_paramter_request(self):
