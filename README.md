@@ -3,7 +3,7 @@
 This git repository contains [ELG compatible](https://european-language-grid.readthedocs.io/en/stable/all/A3_API/LTInternalAPI.html)  Flask based REST API for the Finnish forced alignment.
 
 [Aalto-forced-alignment](https://github.com/aalto-speech/finnish-forced-alignment) is a cross-language forced aligner that supports Finnish, English, Northen Sami, Komi, and Estonian. The tool is written in Python, and published under MIT license.
-Original authors are Juho Leinonen, Sami Virpioja and Mikko Kurimo. Published paper available [here](https://helda.helsinki.fi/handle/10138/330758). 
+Original authors are Juho Leinonen, Sami Virpioja and Mikko Kurimo. Published paper available [here](https://helda.helsinki.fi/handle/10138/330758).
 Our API is based on version [5.1](https://hub.docker.com/r/juholeinonen/kaldi-align/tags).
 
 This ELG API was developed in EU's CEF project: [Microservices at your service](https://www.lingsoft.fi/en/microservices-at-your-service-bridging-gap-between-nlp-research-and-industry)
@@ -22,6 +22,10 @@ Or pull directly ready-made image `docker pull lingsoft/aalto-kaldi-align:tagnam
 ```
 docker run -d -p <port>:8000 --init --memory="2g" --restart always aalto-kaldi-align
 ```
+
+To prevent the critical worker timeout error you may need to increase environment variable `TIMEOUT`.
+The default value is now only 60 seconds. Add `--env TIMEOUT=xxx` to call.
+You can also set the number of the workers in the same way.
 
 ## Running tests
 Some audio samples under `test_samples` directory such as `i_am_developer.wav`, `olen_kehittäjä.wav`, and `olen_arendaja.wav`used for testing are text to speech files captured from Google Translate service. Currently, testing executes for Finnish, Estonian, and English audios and scripts.
